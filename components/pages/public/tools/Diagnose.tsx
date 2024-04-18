@@ -103,7 +103,6 @@ export const Diagnose = ({ userId }: sessionId) => {
       toast.error("Something went wrong!!");
       console.log(`Something went wrong: ${error}`);
       setIsLoading(false);
-      return error;
     }
 
     router.push("/diagnose");
