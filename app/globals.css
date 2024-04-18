@@ -3,31 +3,46 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  @apply bg-bg
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* topnav */
+.shadowNav {
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+}
+
+/* Navbar */
+
+.text {
+  @apply text-black75 text-[18px] font-medium transition hover:text-main 
+}
+
+
+/* Input Component (Common) */
+.label {
+  @apply absolute -top-[10px] left-[12px] bg-white px-[4px] text-small text-black50
+  transition-all
+  peer-placeholder-shown:top-2.5
+  peer-placeholder-shown:text-p
+  peer-focus:-top-[10px] 
+  peer-focus:bg-white
+  peer-focus:text-small
+  peer-focus:text-black50
+}
+
+/* button */
+.anim-bg-gradient {
+  background-size: 300% 100%;
+  background-position: 50% 0;
+  transition: background-position .5s;
+}
+.anim-bg-gradient:hover {
+  background-position: 100% 0;
 }

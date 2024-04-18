@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Cabin } from "next/font/google";
 import "./globals.css";
+import clsx from "clsx";
+import { Toaster } from "react-hot-toast";
+import { EdgeStoreProvider } from "@/lib/edgestore";
 
-const inter = Inter({ subsets: ["latin"] });
+const cabin = Cabin({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,7 +19,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={clsx(cabin.className, "h-screen w-screen")}>
+        <EdgeStoreProvider>
+          <Toaster position="top-center" />
+          {children}
+        </EdgeStoreProvider>
+      </body>
     </html>
   );
 }
