@@ -9,7 +9,7 @@ const DiagnoseSkeleton = () => {
       <div className="hidden flex-col gap-[64px] lg:flex">
         <div className="mb-[64px] flex flex-col gap-[24px]">
           <div className="h-[80px] w-[400px] animate-pulse rounded-md bg-gray-200"></div>
-          <div className="h-[60px] w-[300px] animate-pulse rounded-md bg-gray-200"></div>
+          <div className="h-[60px] w-[399px] animate-pulse rounded-md bg-gray-200"></div>
         </div>
 
         <div>
