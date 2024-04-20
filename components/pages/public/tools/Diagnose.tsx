@@ -104,32 +104,33 @@ export const Diagnose = ({ userId }: sessionId) => {
       console.log(`Something went wrong: ${error}`);
       setIsLoading(false);
     }
-
     router.push("/diagnose");
   };
 
   return (
-    <section className="flex h-full w-full flex-col items-center justify-center gap-[32px] lg:flex-row">
-      <div className="flex flex-col text-center lg:hidden">
-        <h1 className="text-h3 font-semibold text-main">Pneumonia Scanner</h1>
-        <p className="text-p text-black50">
+    <section className="flex h-full w-full flex-col items-center justify-center gap-[24px] lg:flex-row lg:gap-[32px]">
+      <div className="flex w-[80%] flex-col flex-wrap text-center lg:hidden">
+        <h1 className="text-[2rem] font-bold text-main sm:text-h3">
+          Pneumonia Scanner
+        </h1>
+        <p className="text-small text-black50 sm:text-p">
           A Decision Support System for Diagnosing Pneumonia from Chest X-Rays
         </p>
       </div>
-      <SingleImageDropzone
-        width={480}
-        height={480}
-        value={file}
-        onChange={(file) => {
-          setFile(file);
-        }}
-        dropzoneOptions={{
-          maxSize: 20 * 1024 * 1024,
-        }}
-        className=" border-[2px]"
-      />
-      <div className="hidden flex-col gap-[64px] lg:flex  ">
-        <div className="mb-[64px] flex flex-col gap-[24px]">
+      <div className="flex w-full items-center justify-center  lg:justify-end">
+        <SingleImageDropzone
+          value={file}
+          onChange={(file) => {
+            setFile(file);
+          }}
+          dropzoneOptions={{
+            maxSize: 20 * 1024 * 1024,
+          }}
+          className="h-[200px] w-[300px] border-[2px] sm:w-[480px] md:h-[300px] lg:h-[425px] lg:w-[400px] xl:h-[480px] xl:w-[480px]"
+        />
+      </div>
+      <div className="flex w-full flex-col items-center justify-center lg:items-start  ">
+        <div className="hidden flex-col gap-[24px] lg:mb-[80px] lg:flex ">
           <h1 className="text-h1 font-bold leading-[70px] text-main">
             Pneumonia <br /> Scanner
           </h1>
@@ -138,46 +139,10 @@ export const Diagnose = ({ userId }: sessionId) => {
             Pneumonia from Chest X-Rays
           </p>
         </div>
-
-        <div>
-          <button
-            onClick={upload}
-            disabled={isLoading}
-            className="anim-bg-gradient flex h-[60px] w-[300px] items-center justify-center gap-[8px] rounded-lg bg-gradient  text-h6 font-semibold text-white disabled:pointer-events-none disabled:opacity-70"
-          >
-            {isLoading ? (
-              <>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  className="lucide lucide-loader-circle animate-spin text-center text-inherit"
-                >
-                  <path d="M21 12a9 9 0 1 1-6.219-8.56" />
-                </svg>
-                <p className="text-inherit">Diagnosing</p>
-              </>
-            ) : (
-              "Diagnose"
-            )}
-          </button>
-          <p className="mt-[8px] text-p text-black50">
-            Click Diagnose to analyze X-ray and get results.
-          </p>
-        </div>
-      </div>
-
-      <div className="text-center lg:hidden">
         <button
           onClick={upload}
           disabled={isLoading}
-          className="anim-bg-gradient flex h-[60px] w-[450px] items-center justify-center gap-[8px] rounded-lg bg-gradient  text-h6 font-semibold text-white disabled:pointer-events-none disabled:opacity-70"
+          className="anim-bg-gradient flex h-[60px] w-[300px] items-center justify-center gap-[8px] rounded-lg bg-gradient text-h6 font-semibold  text-white disabled:pointer-events-none disabled:opacity-70 sm:w-[480px] lg:w-[300px]"
         >
           {isLoading ? (
             <>
@@ -201,7 +166,7 @@ export const Diagnose = ({ userId }: sessionId) => {
             "Diagnose"
           )}
         </button>
-        <p className="mt-[8px] text-p text-black50">
+        <p className="mt-[8px] text-small text-black50 sm:text-p">
           Click Diagnose to analyze X-ray and get results.
         </p>
       </div>

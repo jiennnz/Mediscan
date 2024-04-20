@@ -13,7 +13,7 @@ const Navbar = async () => {
   console.log(session);
 
   return (
-    <section className=" flex h-full items-center justify-between px-[64px]">
+    <section className="sticky flex h-full items-center justify-between px-[64px]">
       {/* Logo */}
       <div>
         <CustomLink
@@ -23,7 +23,7 @@ const Navbar = async () => {
         />
       </div>
       {/* Navigation */}
-      <div className="hidden md:flex md:gap-[32px] lg:gap-[64px]">
+      <div className="hidden items-center md:flex md:gap-[32px] lg:gap-[64px]">
         <CustomLink text="Tools" href="/" className="text font-bold" />
         <CustomLink
           text="Analytics"
@@ -33,7 +33,7 @@ const Navbar = async () => {
         <CustomLink
           text="User Guide"
           href="/user-guide"
-          className="text font-bold"
+          className="text font-bold "
         />
       </div>
       {/* Auth */}

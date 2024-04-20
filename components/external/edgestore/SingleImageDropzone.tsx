@@ -5,6 +5,7 @@ import Image from "next/image";
 import * as React from "react";
 import { useDropzone, type DropzoneOptions } from "react-dropzone";
 import { twMerge } from "tailwind-merge";
+import toast from "react-hot-toast";
 
 const variants = {
   base: "relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[150px] min-w-[200px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out",
@@ -18,8 +19,8 @@ const variants = {
 };
 
 type InputProps = {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
   className?: string;
   value?: File | string;
   onChange?: (file?: File) => void | Promise<void>;
@@ -85,12 +86,12 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       () =>
         twMerge(
           variants.base,
+          className,
           isFocused && variants.active,
           disabled && variants.disabled,
           imageUrl && variants.image,
           (isDragReject ?? fileRejections[0]) && variants.reject,
           isDragAccept && variants.accept,
-          className,
         ).trim(),
       [
         isFocused,
@@ -126,8 +127,6 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
           {...getRootProps({
             className: dropZoneClassName,
             style: {
-              width,
-              height,
               background: isDragAccept ? "#fff" : "transparent", // Set background color to white when a .dcm file is dropped
             },
           })}
@@ -137,33 +136,37 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
 
           {imageUrl ? (
             // Image Preview
+
             <Image
               className="h-full w-full rounded-md object-cover"
               src={imageUrl}
               alt={acceptedFiles[0]?.name}
-              width={width}
-              height={height}
+              fill
             />
           ) : (
             // Upload Icon
             <div className="flex flex-col items-center justify-center text-xs text-gray-400">
-              <div className="flex flex-col items-center justify-center gap-[16px]">
-                <Image
-                  src={"/x-ray.png"}
-                  alt="x-ray upload image"
-                  width={180}
-                  height={180}
-                  className="mb-[8px] -rotate-3"
-                />
-                <h1 className="text-h5 font-semibold text-black">
+              <div className="flex flex-col items-center justify-center gap-[8px] md:gap-[16px]">
+                <div className="h-[50px] w-[50px] sm:h-[60px] sm:w-[60px] md:h-[75px] md:w-[75px] lg:h-[125px] lg:w-[125px] xl:h-[180px] xl:w-[180px] ">
+                  <Image
+                    src="/x-ray.png"
+                    alt="x-ray upload image"
+                    width={180}
+                    height={180}
+                    className="-rotate-3"
+                    layout="responsive"
+                  />
+                </div>
+                <h1 className="text-p font-semibold text-black sm:text-h6 md:text-[1.5rem] lg:text-h6">
                   Click To Upload X-Ray Image
                 </h1>
-                <div className="flex flex-col items-center">
-                  <p className="text-sm text-gray-600">
+                <div className="flex flex-col items-center  md:gap-[4px] xl:gap-[8px]">
+                  <p className="text-small text-gray-600 md:text-[.9rem]  xl:text-p">
                     Supported file type: JPEG (.jpg, .jpeg).
                   </p>
-                  <p className="text-sm text-gray-600">
-                    Maximum file size: 20 MB
+                  <p className="text-small text-gray-600 md:text-[.9rem]  xl:text-p">
+                    Maximum file size:{" "}
+                    <span className="text-red-500">20 MB</span>
                   </p>
                 </div>
               </div>
@@ -191,7 +194,9 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {/* Error Text */}
-        <div className="mt-1 text-xs text-red-500">{errorMessage}</div>
+        <div className="mt-1 text-p text-red-500 md:text-h6">
+          {errorMessage}
+        </div>
       </div>
     );
   },
