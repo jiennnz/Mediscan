@@ -40,7 +40,8 @@ const Register = () => {
     const response = await promise;
     console.log(response);
     if (response.data?.success) {
-      router.push("/");
+      window.location.href = "/";
+
     }
   };
 

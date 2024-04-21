@@ -13,7 +13,7 @@ const Navbar = async () => {
   console.log(session);
 
   return (
-    <section className="sticky flex h-full items-center justify-between px-[64px]">
+    <section className="sticky z-50 flex h-full items-center justify-between px-[64px]">
       {/* Logo */}
       <div>
         <CustomLink
