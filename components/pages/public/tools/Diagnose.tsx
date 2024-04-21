@@ -4,6 +4,7 @@ import { SingleImageDropzone } from "@/components/external/edgestore/SingleImage
 import { useImageUrlStore } from "@/lib/context/diagnoseFileStore";
 import { useResultStore } from "@/lib/context/resultStateStore";
 import { useEdgeStore } from "@/lib/edgestore";
+import { generateHash } from "@/lib/server/generateHash";
 import axios from "axios";
 import { Types } from "mongoose";
 import { useRouter } from "next/navigation";
@@ -29,6 +30,13 @@ export const Diagnose = ({ userId }: sessionId) => {
       return;
     }
 
+    const fileData = await file.arrayBuffer();
+    const buffer = Buffer.from(fileData);
+
+    const hash = generateHash(buffer);
+
+    console.log(hash);
+
     const promise = edgestore.xrayImage.upload({
       file,
       onProgressChange: (progress) => console.log(progress),
@@ -37,7 +45,7 @@ export const Diagnose = ({ userId }: sessionId) => {
     toast.promise(
       promise,
       {
-        loading: "Uploading File...",
+        loading: "Initializing Diagnosis...",
         success: "File Uploaded",
         error: (error) => {
           console.log("Upload Error:", error);
@@ -46,7 +54,7 @@ export const Diagnose = ({ userId }: sessionId) => {
       },
       {
         success: {
-          duration: 2000,
+          duration: 1000,
         },
       },
     );
@@ -68,7 +76,7 @@ export const Diagnose = ({ userId }: sessionId) => {
       const promise = axios.post(`/api/${apiRoute}`, urlData);
 
       toast.promise(promise, {
-        loading: "Initiating Diagnosis...",
+        loading: "Scanning the Image...",
         success: "Diagnosis Done!",
         error: (error) => {
           console.log("Upload Error:", error);

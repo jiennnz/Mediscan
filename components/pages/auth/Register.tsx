@@ -23,7 +23,19 @@ const Register = () => {
   const onSubmit: SubmitHandler<RegisterSchemaType> = async (
     data: RegisterSchemaType,
   ) => {
-    const promise = axios.post("/api/auth/register", data);
+    const diagnosisData = sessionStorage.getItem("diagnosis");
+    const diagnosisObj = diagnosisData ? JSON.parse(diagnosisData) : {};
+
+    const combinedData = {
+      user: {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      },
+      diagnosis: diagnosisObj,
+    };
+
+    const promise = axios.post("/api/auth/register", combinedData);
 
     toast.promise(promise, {
       loading: "Logging you in...",
@@ -40,8 +52,8 @@ const Register = () => {
     const response = await promise;
     console.log(response);
     if (response.data?.success) {
+      sessionStorage.removeItem("diagnosis");
       window.location.href = "/";
-
     }
   };
 

@@ -23,7 +23,20 @@ const Login = () => {
   const onSubmit: SubmitHandler<LoginSchemaType> = async (
     data: LoginSchemaType,
   ) => {
-    const promise = axios.post("/api/auth/login", data);
+    // Check if there is data in sessionStorage
+    const diagnosisData = sessionStorage.getItem("diagnosis");
+    const diagnosisObj = diagnosisData ? JSON.parse(diagnosisData) : {};
+
+    // Create the combined data object
+    const combinedData = {
+      user: {
+        username: data.username,
+        password: data.password,
+      },
+      diagnosis: diagnosisObj,
+    };
+
+    const promise = axios.post("/api/auth/login", combinedData);
 
     toast.promise(promise, {
       loading: "Logging you in...",
@@ -40,6 +53,7 @@ const Login = () => {
     const response = await promise;
     console.log(response);
     if (response.data?.success) {
+      sessionStorage.removeItem("diagnosis");
       window.location.href = "/";
     }
   };

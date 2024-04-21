@@ -1,13 +1,39 @@
-import React from "react";
-import { testData } from "./historyData";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import clsx from "clsx";
 import { FileDown, SquarePen, Trash2 } from "lucide-react";
 
+interface Diagnosis {
+  _id: string;
+  imageName: string;
+  imageURL: string;
+  diagnosisResult: string;
+  confidenceLevel: number;
+  createdAt: string;
+}
+
 const Table = () => {
-  const diagnoses = testData;
+  // Initially use testData for development, but replace with API data in production
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/api/history?page=${currentPage}`);
+        setDiagnoses(response.data.items);
+        setTotalPages(response.data.totalPages);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto overflow-y-auto">
       <table className="min-w-full table-fixed border-collapse">
         <thead>
           <tr>
@@ -109,6 +135,19 @@ const Table = () => {
           ))}
         </tbody>
       </table>
+      <div className="mt-4 flex justify-center">
+        {Array.from({ length: totalPages }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => setCurrentPage(i + 1)}
+            className={`mx-1 rounded px-3 py-1 ${
+              currentPage === i + 1 ? "bg-blue-500 text-white" : "bg-gray-200"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
