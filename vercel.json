@@ -1,0 +1,10 @@
+{
+  "functions": {
+    "api/diagnose": {
+      "maxDuration": 30
+    },
+    "api/diagnose-no-auth": {
+      "maxDuration": 30
+    }
+  }
+}

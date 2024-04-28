@@ -33,11 +33,15 @@ export async function POST(request: NextRequest) {
 
       result.predicted_label = response.data?.predicted_label;
       result.confidence_level = response.data?.confidence_level;
-    } catch (error) {
+    } catch (error: any) {
+      let errorMessage = "An error occurred while processing your request. Please try again later.";
+  if (error.code === "ECONNABORTED") {
+    errorMessage = "The request timed out. Please try again later.";
+  }
       console.log(error);
       return NextResponse.json({
         message: "Something went Wrong",
-        error: error,
+        error: errorMessage,
         success: false,
       });
     }
