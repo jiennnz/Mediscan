@@ -22,7 +22,7 @@ body {
 /* Navbar */
 
 .text {
-  @apply text-black75 text-p font-medium transition lg:text-small hover:text-main
+  @apply text-black75 text-small font-medium transition hover:text-main
 }
 
 

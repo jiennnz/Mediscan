@@ -81,6 +81,7 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
             if (acceptedFiles.length > 0) {
               const file = acceptedFiles[0];
               const result = await checkIfXray(file);
+           
 
               if (!result) {
                 toast.error("The uploaded image is not a valid X-ray.");
@@ -191,11 +192,11 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                 <h1 className="text-p font-semibold text-black75 sm:text-h6 md:text-[1.5rem] lg:text-h6">
                   Click To Upload X-Ray Image
                 </h1>
-                <div className="flex flex-col items-center  md:gap-[4px] xl:gap-[8px]">
-                  <p className="text-small text-black75  ">
+                <div className="flex flex-col items-center gap-[4px] xl:gap-[8px]">
+                  <p className="text-smaller text-black75  ">
                     Supported file type: JPEG (.jpg, .jpeg).
                   </p>
-                  <p className="text-small text-black75">
+                  <p className="text-smaller text-black75">
                     Maximum file size:{" "}
                     <span className="text-red-500">20 MB</span>
                   </p>

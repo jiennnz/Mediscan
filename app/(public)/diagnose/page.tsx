@@ -7,7 +7,7 @@ const Page = () => {
         <Result />
       </div>
       <div className="flex h-[25%] w-full items-start justify-center">
-        <div className="w-[80%] rounded-lg bg-[#E6F7FF] p-[24px] text-[12px] text-black75">
+        <div className="w-[80%] rounded-lg bg-[#E6F7FF] p-[24px] text-[12px] text-black75 sm:text-small lg:w-[70%] xl:w-[55%] 2xl:w-[45%] 2xl:text-p">
           <p>
             Disclaimer: This platform serves as a decision support system
             providing informational predictions. It is not a substitute for

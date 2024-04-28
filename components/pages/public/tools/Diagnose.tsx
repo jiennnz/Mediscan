@@ -206,13 +206,15 @@ export const Diagnose = ({ userId }: sessionId) => {
 
   return (
     <section className="flex h-full w-full flex-col items-center justify-center gap-[24px] lg:flex-row lg:gap-[32px]">
-      <div className="flex w-[80%] flex-col flex-wrap text-center lg:hidden">
-        <h1 className="text-[2rem] font-bold text-main sm:text-h1">
+      <div className="flex w-[80%] flex-col flex-wrap items-center text-center lg:hidden">
+        <h1 className="text-[2rem] font-bold text-main sm:text-h3">
           Pneumonia Scanner
         </h1>
-        <p className="text-small text-black50 sm:text-p">
-          A Decision Support System for Diagnosing Pneumonia from Chest X-Rays
-        </p>
+        <div className="sm:flex sm:w-[70%] sm:items-center">
+          <p className="text-smaller text-black50  sm:text-small">
+            A Decision Support System for Diagnosing Pneumonia from Chest X-Rays
+          </p>
+        </div>
       </div>
       <div className="flex w-full items-center justify-center  lg:justify-end">
         <SingleImageDropzone
@@ -263,7 +265,7 @@ export const Diagnose = ({ userId }: sessionId) => {
             "Diagnose"
           )}
         </button>
-        <p className="mt-[8px] text-small text-black50">
+        <p className="mt-[8px] text-smaller text-black50">
           Click Diagnose to analyze X-ray and get results.
         </p>
       </div>

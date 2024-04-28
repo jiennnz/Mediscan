@@ -26,9 +26,9 @@ const Result = () => {
           />
         </div>
       </div>
-      <div className="flex w-[80%] flex-col pt-[16px] sm:w-[45%] sm:gap-[24px] sm:pt-0 lg:gap-[40px] xl:w-[50%]">
-        <div className="flex items-center gap-[8px] sm:flex-col sm:items-start sm:gap-0">
-          <h1 className=" text-p font-semibold text-black50 lg:text-h5 xl:text-h4">
+      <div className="flex w-[300px] flex-col  pt-[16px] sm:w-[45%] sm:gap-[8px] sm:pt-0 lg:gap-[32px] xl:w-[50%]">
+        <div className="flex items-center  gap-[8px] sm:flex-col sm:items-start sm:gap-0">
+          <h1 className=" text-p font-light text-black50 lg:text-h5">
             Results:
           </h1>
           <h1
@@ -46,7 +46,7 @@ const Result = () => {
         </div>
 
         <div className="flex items-center gap-[8px] sm:flex-col sm:items-start sm:gap-0">
-          <h1 className="text-p font-semibold text-black50 lg:text-h5 xl:text-h4">
+          <h1 className="text-p font-light text-black50 lg:text-h5">
             Confidence Level:
           </h1>
           <h1 className=" text-h6 font-black leading-[50px] text-black sm:text-h3 xl:text-h2 xl:leading-[70px]">
@@ -54,19 +54,19 @@ const Result = () => {
           </h1>
         </div>
 
-        <div className="w-[270px] pt-[8px] sm:pt-0 xl:w-[400px]">
+        <div className="w-[270px] pt-[8px] sm:pt-0 lg:w-[300px] xl:w-[400px]">
           <CustomLink
             href="/user-guide"
             text="Explore how predictions are generated. Click here for an
                       in-depth explanation."
-            className=" text-[.9rem] text-main opacity-85 sm:text-p xl:text-h6"
+            className=" text-[.9rem] text-main opacity-85 sm:text-smaller lg:text-small xl:text-p"
           />
         </div>
-        <div className="mt-[16px] flex justify-center sm:justify-start">
+        <div className="flex justify-center pt-[8px] sm:justify-start">
           <CustomLink
             href="/"
             text="Upload Again"
-            className="anim-bg-gradient rounded-xl bg-gradient px-[64px] py-[12px] text-small text-white"
+            className="anim-bg-gradient rounded-xl bg-gradient px-[64px] py-[12px] text-small text-white xl:text-p xl:font-semibold"
           />
         </div>
       </div>

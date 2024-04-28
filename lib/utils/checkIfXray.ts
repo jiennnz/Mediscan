@@ -13,51 +13,70 @@ export const checkIfXray = async (file: File): Promise<boolean> => {
             resolve(false);
             return;
           }
-          canvas.width = img.width;
-          canvas.height = img.height;
-          ctx.drawImage(img, 0, 0);
 
-          // Define the ROI (central square covering 80% of the image)
-          const roiSize = Math.min(canvas.width, canvas.height) * 0.8;
-          const roiX = (canvas.width - roiSize) / 2;
-          const roiY = (canvas.height - roiSize) / 2;
+          // Downscale the image to reduce memory usage
+          const MAX_SIZE = 1000;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_SIZE) {
+              height *= MAX_SIZE / width;
+              width = MAX_SIZE;
+            }
+          } else {
+            if (height > MAX_SIZE) {
+              width *= MAX_SIZE / height;
+              height = MAX_SIZE;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
 
-          // Get image data from ROI
-          const roiImageData = ctx.getImageData(roiX, roiY, roiSize, roiSize);
-          const totalPixels = roiImageData.width * roiImageData.height;
+          // Define the number of regions and their sizes
+          const numRegions = 4; // Dividing the image into 4 regions
+          const regionSize = {
+            width: Math.ceil(canvas.width / 2),
+            height: Math.ceil(canvas.height / 2),
+          };
 
           // Initialize counts for different color categories
-          let xrayColorCount = 0;
-          let nonXrayColorCount = 0;
+          const xrayColorCounts = Array(numRegions).fill(0);
 
-          // Categorize pixels based on color
-          for (let i = 0; i < roiImageData.data.length; i += 4) {
-            const r = roiImageData.data[i];
-            const g = roiImageData.data[i + 1];
-            const b = roiImageData.data[i + 2];
+          // Categorize pixels based on color for each region
+          for (let regionIndex = 0; regionIndex < numRegions; regionIndex++) {
+            const regionX = (regionIndex % 2) * regionSize.width;
+            const regionY = Math.floor(regionIndex / 2) * regionSize.height;
 
-            // Check if the pixel is grayscale (within a grayscale range)
-            if (
-              Math.abs(r - g) < 10 &&
-              Math.abs(g - b) < 10 &&
-              Math.abs(b - r) < 10
-            ) {
-              xrayColorCount++;
-            } else {
-              nonXrayColorCount++;
+            for (let y = regionY; y < regionY + regionSize.height; y++) {
+              for (let x = regionX; x < regionX + regionSize.width; x++) {
+                const pixel = ctx.getImageData(x, y, 1, 1).data;
+                const r = pixel[0];
+                const g = pixel[1];
+                const b = pixel[2];
+
+                // Check if the pixel is grayscale (within a grayscale range)
+                if (
+                  Math.abs(r - g) < 10 &&
+                  Math.abs(g - b) < 10 &&
+                  Math.abs(b - r) < 10
+                ) {
+                  xrayColorCounts[regionIndex]++;
+                }
+              }
             }
           }
 
-          // Calculate percentages of different color categories
-          const xrayColorPercentage = (xrayColorCount / totalPixels) * 100;
-          const nonXrayColorPercentage =
-            (nonXrayColorCount / totalPixels) * 100;
+          // Calculate percentages of X-ray colors for each region
+          const regionTotalPixels = regionSize.width * regionSize.height;
+          const xrayColorPercentages = xrayColorCounts.map(
+            (count) => (count / regionTotalPixels) * 100,
+          );
 
-          // Threshold for considering the image as an X-ray (adjust as needed)
-          const xrayColorThreshold = 80;
-
-          // Check if the image meets the criteria for an X-ray
-          const isXray = nonXrayColorPercentage <= xrayColorThreshold;
+          // Check if all percentages meet the criteria
+          const isXray = xrayColorPercentages.every(
+            (percentage) => percentage >= 70,
+          );
 
           resolve(isXray);
         };
