@@ -95,7 +95,10 @@ export const Diagnose = ({ userId }: sessionId) => {
       url: url,
     };
 
-    const diagnoseApiPromise = axios.post("/api/diagnose", data);
+    const diagnoseApiPromise = axios.post(
+      "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/diagnose",
+      data,
+    );
     toast.promise(
       diagnoseApiPromise,
       {
@@ -116,8 +119,8 @@ export const Diagnose = ({ userId }: sessionId) => {
     );
 
     const diagnoseResponse = await diagnoseApiPromise;
-    const predicted_label = diagnoseResponse.data?.result?.predicted_label;
-    const confidence_level = diagnoseResponse.data?.result?.confidence_level;
+    const predicted_label = diagnoseResponse.data?.predicted_label;
+    const confidence_level = diagnoseResponse.data?.confidence_level;
 
     setResult(predicted_label);
     setConfidence(confidence_level);
