@@ -26,14 +26,14 @@ const Result = () => {
           />
         </div>
       </div>
-      <div className="flex flex-col pt-[16px] sm:w-[45%] sm:gap-[24px] sm:pt-0 lg:gap-[40px] xl:w-[50%]">
+      <div className="flex w-[80%] flex-col pt-[16px] sm:w-[45%] sm:gap-[24px] sm:pt-0 lg:gap-[40px] xl:w-[50%]">
         <div className="flex items-center gap-[8px] sm:flex-col sm:items-start sm:gap-0">
-          <h1 className="text-h6 font-semibold text-black50 lg:text-h5 xl:text-h4">
+          <h1 className=" text-p font-semibold text-black50 lg:text-h5 xl:text-h4">
             Results:
           </h1>
           <h1
             className={clsx(
-              "text-h5 font-black leading-[55px] sm:text-h3 lg:text-h2 xl:text-h1 xl:leading-[70px]",
+              " text-h6 font-black sm:text-h3 sm:leading-[55px] lg:text-h2 xl:text-h1 xl:leading-[70px]",
               {
                 "text-secondary": result === "Normal",
                 "text-error": result === "Bacterial",
@@ -46,10 +46,10 @@ const Result = () => {
         </div>
 
         <div className="flex items-center gap-[8px] sm:flex-col sm:items-start sm:gap-0">
-          <h1 className="text-h6 font-semibold text-black50 lg:text-h5 xl:text-h4">
+          <h1 className="text-p font-semibold text-black50 lg:text-h5 xl:text-h4">
             Confidence Level:
           </h1>
-          <h1 className=" text-h5 font-black leading-[50px] text-black sm:text-h3 xl:text-h2 xl:leading-[70px]">
+          <h1 className=" text-h6 font-black leading-[50px] text-black sm:text-h3 xl:text-h2 xl:leading-[70px]">
             {confidence}%
           </h1>
         </div>
@@ -60,6 +60,13 @@ const Result = () => {
             text="Explore how predictions are generated. Click here for an
                       in-depth explanation."
             className=" text-[.9rem] text-main opacity-85 sm:text-p xl:text-h6"
+          />
+        </div>
+        <div className="mt-[16px] flex justify-center sm:justify-start">
+          <CustomLink
+            href="/"
+            text="Upload Again"
+            className="anim-bg-gradient rounded-xl bg-gradient px-[64px] py-[12px] text-small text-white"
           />
         </div>
       </div>
