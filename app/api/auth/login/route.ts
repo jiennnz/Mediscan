@@ -6,7 +6,6 @@ import bcryptjs from "bcryptjs";
 import { encrypt } from "@/lib/server/auth";
 import { cookies } from "next/headers";
 import Diagnosis, { DiagnosisDocument } from "@/lib/models/Diagnosis";
-import Analytics from "@/lib/models/Analytics";
 
 export async function POST(request: NextRequest) {
   await dbConnect();
@@ -57,15 +56,10 @@ export async function POST(request: NextRequest) {
 
     // Save session data to database
     const timestamp = new Date().getTime();
-
-    // Extract current month and year
-    const currentMonth = new Date().toLocaleString("en-US", { month: "long" });
-    const currentYear = new Date().getFullYear();
     const randomComponent = Math.random().toString(36).substring(2, 7);
 
     // Save multiple diagnosis data and analytics to database
     const diagnosisDataArray: Partial<DiagnosisDocument>[] = [];
-    const analyticsUpdateOperations: Record<string, number> = {};
 
     for (const key in body.diagnosis) {
       if (Object.prototype.hasOwnProperty.call(body.diagnosis, key)) {
@@ -80,27 +74,10 @@ export async function POST(request: NextRequest) {
         };
 
         diagnosisDataArray.push(diagnosisData);
-
-        const analyticsKey = `data.${currentMonth}.${diagnosisEntry.predicted_label}`;
-        // Increment the analyticsUpdateOperations by 1 for each diagnosis
-        analyticsUpdateOperations[analyticsKey] =
-          (analyticsUpdateOperations[analyticsKey] || 0) + 1;
       }
     }
 
     await Diagnosis.insertMany(diagnosisDataArray);
-
-    // Update analytics with $inc operator
-    const analyticsUpdate: Record<string, number> = {};
-    for (const key in analyticsUpdateOperations) {
-      analyticsUpdate[key] = analyticsUpdateOperations[key]; // No error here
-    }
-
-    await Analytics.updateOne(
-      { year: currentYear },
-      { $inc: analyticsUpdate },
-      { upsert: true },
-    );
 
     console.log("Multiple diagnosis entries saved successfully.");
     console.log(body.diagnosis);

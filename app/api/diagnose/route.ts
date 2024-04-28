@@ -1,5 +1,6 @@
 import Analytics, { monthNames, YearlyData } from "@/lib/models/Analytics";
 import Diagnosis, { DiagnosisDocument } from "@/lib/models/Diagnosis";
+import ImageHash, { ImageHashDocument } from "@/lib/models/ImageHash";
 import { getSession } from "@/lib/server/auth";
 import { dbConnect } from "@/lib/server/dbConnect";
 import axios from "axios";
@@ -16,6 +17,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const session = await getSession();
     const url = body.url;
+    const hash = body.hash;
 
     const result: Result = {
       predicted_label: "none",
@@ -27,6 +29,9 @@ export async function POST(request: NextRequest) {
       const response = await axios.post(
         "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/diagnose",
         urlData,
+        {
+          timeout: 15000,
+        },
       );
 
       console.log(response.data);
@@ -34,9 +39,11 @@ export async function POST(request: NextRequest) {
       result.predicted_label = response.data?.predicted_label;
       result.confidence_level = response.data?.confidence_level;
     } catch (error) {
+      console.log(error);
       return NextResponse.json({
         message: "Something went Wrong",
         error: error,
+        success: false,
       });
     }
 
@@ -57,37 +64,53 @@ export async function POST(request: NextRequest) {
     const newDiagnosis = new Diagnosis(diagnosisData);
     await newDiagnosis.save();
 
-    // Save prediction result to Analytics
-    const currentYear = new Date().getFullYear();
-    const currentMonth = monthNames[new Date().getMonth()];
+    const existingImage = await ImageHash.findOne({ imageHash: hash });
 
-    // Check if there is a document for the analytics
-    const analyticsExists = await Analytics.exists({ year: currentYear });
+    if (!existingImage) {
+      // Save new image hash
+      const imageHashData: Partial<ImageHashDocument> = {
+        imageHash: hash,
+        diagnosisResult: result.predicted_label,
+        confidenceLevel: result.confidence_level,
+      };
 
-    // If the document doesn't exist, create one with default values for all months
-    if (!analyticsExists) {
-      const defaultAnalyticsData: YearlyData = {};
-      monthNames.forEach((month) => {
-        defaultAnalyticsData[month] = { Normal: 0, Bacterial: 0, Viral: 0 };
+      const newImageHash = new ImageHash(imageHashData);
+      await newImageHash.save();
+
+      // Save prediction result to Analytics
+      const currentYear = new Date().getFullYear();
+      const currentMonth = monthNames[new Date().getMonth()];
+
+      // Check if there is a document for the analytics
+      const analyticsExists = await Analytics.exists({ year: currentYear });
+
+      // If the document doesn't exist, create one with default values for all months
+      if (!analyticsExists) {
+        const defaultAnalyticsData: YearlyData = {};
+        monthNames.forEach((month) => {
+          defaultAnalyticsData[month] = { Normal: 0, Bacterial: 0, Viral: 0 };
+        });
+
+        await Analytics.create({
+          year: currentYear,
+          data: defaultAnalyticsData,
+        });
+      }
+
+      // Construct the update object based on the predicted label
+      const updateObject = {
+        $inc: {
+          [`data.${currentMonth}.${result.predicted_label}`]: 1,
+        },
+      };
+
+      // Update the document or create a new one if it doesn't exist
+      await Analytics.updateOne({ year: currentYear }, updateObject, {
+        upsert: true,
       });
-
-      await Analytics.create({
-        year: currentYear,
-        data: defaultAnalyticsData,
-      });
+    } else {
+      console.log("Image already exists: ", hash);
     }
-
-    // Construct the update object based on the predicted label
-    const updateObject = {
-      $inc: {
-        [`data.${currentMonth}.${result.predicted_label}`]: 1,
-      },
-    };
-
-    // Update the document or create a new one if it doesn't exist
-    await Analytics.updateOne({ year: currentYear }, updateObject, {
-      upsert: true,
-    });
 
     const response = NextResponse.json({
       message: "Success",
@@ -101,6 +124,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Internal Server Error",
       error: error,
+      success: false,
     });
   }
 }

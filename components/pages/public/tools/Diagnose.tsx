@@ -29,21 +29,19 @@ export const Diagnose = ({ userId }: sessionId) => {
       toast.error("Please Upload a File!");
       return;
     }
-
     const fileData = await file.arrayBuffer();
     const buffer = Buffer.from(fileData);
-
     const hash = generateHash(buffer);
 
-    console.log(hash);
-
-    const promise = edgestore.xrayImage.upload({
+    const edgeStorePromise = edgestore.xrayImage.upload({
       file,
       onProgressChange: (progress) => console.log(progress),
     });
 
+    setIsLoading(!isLoading);
+
     toast.promise(
-      promise,
+      edgeStorePromise,
       {
         loading: "Initializing Diagnosis...",
         success: "File Uploaded",
@@ -59,66 +57,67 @@ export const Diagnose = ({ userId }: sessionId) => {
       },
     );
 
-    setIsLoading(true);
-    const response = await promise;
+    const response = await edgeStorePromise;
     const url = response.url;
     setResult("");
     setConfidence("");
     setUrl(url);
 
-    try {
-      let apiRoute = "diagnose";
-      if (userId === null || userId === undefined) {
-        apiRoute = "diagnose-no-auth";
-      }
-
-      const urlData = { url: url };
-      const promise = axios.post(`/api/${apiRoute}`, urlData);
-
-      toast.promise(promise, {
-        loading: "Scanning the Image...",
-        success: "Diagnosis Done!",
-        error: (error) => {
-          console.log("Upload Error:", error);
-          const errorMessage =
-            error.response?.data?.error || "Failed to Upload";
-          return errorMessage;
-        },
-      });
-
-      const response = await promise;
-      setResult(response.data?.result?.predicted_label);
-      setConfidence(response.data?.result?.confidence_level);
-
-      if (userId === null || userId === undefined) {
-        const diagnosisJson = sessionStorage.getItem("diagnosis");
-        const diagnosis = diagnosisJson ? JSON.parse(diagnosisJson) : {};
-        const currentIndex = Object.keys(diagnosis).length;
-        const newDiagnosis = {
-          ...diagnosis,
-          [currentIndex]: {
-            predicted_label: response.data?.result?.predicted_label,
-            confidence_level: response.data?.result?.confidence_level,
-            imageUrl: url,
-          },
-        };
-        sessionStorage.setItem("diagnosis", JSON.stringify(newDiagnosis));
-      }
-
-      console.log(response.data);
-      console.log(userId);
-    } catch (error) {
-      toast.error("Something went wrong!!");
-      console.log(`Something went wrong: ${error}`);
-      setIsLoading(false);
+    let apiRoute = "diagnose";
+    if (userId === null || userId === undefined) {
+      apiRoute = "diagnose-no-auth";
     }
-    router.push("/diagnose");
+
+    const data = {
+      url: url,
+      hash: hash,
+    };
+
+    const diagnoseApiPromise = axios.post(`/api/${apiRoute}`, data);
+    toast.promise(diagnoseApiPromise, {
+      loading: "Scanning the Image...",
+      success: "Diagnosis Done!",
+      error: (error) => {
+        console.log("Upload Error:", error);
+        const errorMessage = error.response?.data?.error || "Failed to Upload";
+        return errorMessage;
+      },
+    });
+
+    const diagnoseResponse = await diagnoseApiPromise;
+    if (diagnoseResponse.data?.success === false) {
+      setIsLoading(false);
+      toast.error("Something went wrong");
+      console.log(diagnoseResponse.data?.error);
+    }
+    setResult(diagnoseResponse.data?.result?.predicted_label);
+    setConfidence(diagnoseResponse.data?.result?.confidence_level);
+
+    if (userId === null && diagnoseResponse.data?.success) {
+      const diagnosisJson = sessionStorage.getItem("diagnosis");
+      const diagnosis = diagnosisJson ? JSON.parse(diagnosisJson) : {};
+      const currentIndex = Object.keys(diagnosis).length;
+      const newDiagnosis = {
+        ...diagnosis,
+        [currentIndex]: {
+          predicted_label: diagnoseResponse.data?.result?.predicted_label,
+          confidence_level: diagnoseResponse.data?.result?.confidence_level,
+          imageUrl: url,
+        },
+      };
+      sessionStorage.setItem("diagnosis", JSON.stringify(newDiagnosis));
+    }
+
+    if (diagnoseResponse.data?.success) {
+      setIsLoading(false);
+      router.push("/diagnose");
+    }
   };
 
   return (
     <section className="flex h-full w-full flex-col items-center justify-center gap-[24px] lg:flex-row lg:gap-[32px]">
       <div className="flex w-[80%] flex-col flex-wrap text-center lg:hidden">
-        <h1 className="text-[2rem] font-bold text-main sm:text-h3">
+        <h1 className="text-[2rem] font-bold text-main sm:text-h1">
           Pneumonia Scanner
         </h1>
         <p className="text-small text-black50 sm:text-p">
@@ -142,7 +141,7 @@ export const Diagnose = ({ userId }: sessionId) => {
           <h1 className="text-h1 font-bold leading-[70px] text-main">
             Pneumonia <br /> Scanner
           </h1>
-          <p className="text-h6 text-black50">
+          <p className="text-p text-black50">
             A Decision Support System for Diagnosing <br />
             Pneumonia from Chest X-Rays
           </p>
@@ -150,7 +149,7 @@ export const Diagnose = ({ userId }: sessionId) => {
         <button
           onClick={upload}
           disabled={isLoading}
-          className="anim-bg-gradient flex h-[60px] w-[300px] items-center justify-center gap-[8px] rounded-lg bg-gradient text-h6 font-semibold  text-white disabled:pointer-events-none disabled:opacity-70 sm:w-[480px] lg:w-[300px]"
+          className="anim-bg-gradient flex h-[60px] w-[300px] items-center justify-center gap-[12px] rounded-lg bg-gradient text-p font-semibold  text-white disabled:pointer-events-none disabled:opacity-70 sm:w-[480px] lg:w-[300px]"
         >
           {isLoading ? (
             <>
@@ -174,7 +173,7 @@ export const Diagnose = ({ userId }: sessionId) => {
             "Diagnose"
           )}
         </button>
-        <p className="mt-[8px] text-small text-black50 sm:text-p">
+        <p className="mt-[8px] text-small text-black50">
           Click Diagnose to analyze X-ray and get results.
         </p>
       </div>

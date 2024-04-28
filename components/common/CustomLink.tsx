@@ -7,11 +7,17 @@ type LinkProps = {
   className: string;
   href: string;
   onClick?: () => void;
+  target?: string;
 };
 
-const CustomLink = ({ text, className, href, onClick }: LinkProps) => {
+const CustomLink = ({ text, className, href, onClick, target }: LinkProps) => {
   return (
-    <Link href={href} className={clsx(className)} onClick={onClick}>
+    <Link
+      href={href}
+      target={target}
+      className={clsx(className)}
+      onClick={onClick}
+    >
       {text}
     </Link>
   );

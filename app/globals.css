@@ -15,13 +15,14 @@ body {
 
 /* topnav */
 .shadowNav {
-  box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
+
 
 /* Navbar */
 
 .text {
-  @apply text-black75 text-p font-medium transition hover:text-main lg:text-[18px]
+  @apply text-black75 text-p font-medium transition lg:text-small hover:text-main
 }
 
 
@@ -30,10 +31,10 @@ body {
   @apply absolute -top-[10px] left-[12px] bg-white px-[4px] text-small text-black50
   transition-all
   peer-placeholder-shown:top-2.5
-  peer-placeholder-shown:text-p
+  peer-placeholder-shown:text-small
   peer-focus:-top-[10px] 
   peer-focus:bg-white
-  peer-focus:text-small
+  peer-focus:text-smaller
   peer-focus:text-black50
 }
 

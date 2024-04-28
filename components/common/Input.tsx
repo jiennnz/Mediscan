@@ -34,7 +34,7 @@ const Input = <T extends FieldValues>({
       />
       <label className="label">{placeholder}</label>
       {errors[id] && (
-        <p className="text-small text-error">{errors[id]?.message}</p>
+        <p className="text-smaller text-error">{errors[id]?.message}</p>
       )}
     </div>
   );

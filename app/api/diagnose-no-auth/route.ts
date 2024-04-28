@@ -1,4 +1,5 @@
 import Analytics, { monthNames, YearlyData } from "@/lib/models/Analytics";
+import ImageHash, { ImageHashDocument } from "@/lib/models/ImageHash";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -11,6 +12,7 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const url = body.url;
+    const hash = body.hash;
 
     const result: Result = {
       predicted_label: "none",
@@ -22,12 +24,36 @@ export async function POST(request: NextRequest) {
       const response = await axios.post(
         "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/diagnose",
         urlData,
+        {
+          timeout: 15000,
+        },
       );
 
       console.log(response.data);
 
       result.predicted_label = response.data?.predicted_label;
       result.confidence_level = response.data?.confidence_level;
+    } catch (error) {
+      console.log(error);
+      return NextResponse.json({
+        message: "Something went Wrong",
+        error: error,
+        success: false,
+      });
+    }
+
+    const existingImage = await ImageHash.findOne({ imageHash: hash });
+
+    if (!existingImage) {
+      // Save new image hash
+      const imageHashData: Partial<ImageHashDocument> = {
+        imageHash: hash,
+        diagnosisResult: result.predicted_label,
+        confidenceLevel: result.confidence_level,
+      };
+
+      const newImageHash = new ImageHash(imageHashData);
+      await newImageHash.save();
 
       // Save prediction result to Analytics
       const currentYear = new Date().getFullYear();
@@ -60,11 +86,8 @@ export async function POST(request: NextRequest) {
       await Analytics.updateOne({ year: currentYear }, updateObject, {
         upsert: true,
       });
-    } catch (error) {
-      return NextResponse.json({
-        message: "Something went Wrong",
-        error: error,
-      });
+    } else {
+      console.log("Image already exists:", hash);
     }
 
     const response = NextResponse.json({
@@ -79,6 +102,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Internal Server Error",
       error: error,
+      success: false,
     });
   }
 }

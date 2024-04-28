@@ -6,6 +6,7 @@ import * as React from "react";
 import { useDropzone, type DropzoneOptions } from "react-dropzone";
 import { twMerge } from "tailwind-merge";
 import toast from "react-hot-toast";
+import { checkIfXray } from "@/lib/utils/checkIfXray";
 
 const variants = {
   base: "relative rounded-md flex justify-center items-center flex-col cursor-pointer min-h-[150px] min-w-[200px] border border-dashed border-gray-400 dark:border-gray-300 transition-colors duration-200 ease-in-out",
@@ -74,9 +75,30 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       disabled,
       onDrop: (acceptedFiles) => {
         const file = acceptedFiles[0];
-        if (file) {
-          void onChange?.(file);
-        }
+
+        const acceptImage = async () => {
+          const validateIfXray = async () => {
+            if (acceptedFiles.length > 0) {
+              const file = acceptedFiles[0];
+              const result = await checkIfXray(file);
+
+              if (!result) {
+                toast.error("The uploaded image is not a valid X-ray.");
+                return true;
+              } else {
+                return false;
+              }
+            }
+          };
+
+          const result = await validateIfXray();
+
+          if (!result) {
+            void onChange?.(file);
+          }
+        };
+
+        acceptImage();
       },
       ...dropzoneOptions,
     });
@@ -104,23 +126,32 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       ],
     );
 
-    // error validation messages
-    const errorMessage = React.useMemo(() => {
-      if (fileRejections[0]) {
+    // Handle and display toast messages based on file rejections
+    React.useEffect(() => {
+      if (fileRejections.length > 0) {
         const { errors } = fileRejections[0];
-        if (errors[0]?.code === "file-too-large") {
-          return ERROR_MESSAGES.fileTooLarge(dropzoneOptions?.maxSize ?? 0);
-        } else if (errors[0]?.code === "file-invalid-type") {
-          return ERROR_MESSAGES.fileInvalidType();
-        } else if (errors[0]?.code === "too-many-files") {
-          return ERROR_MESSAGES.tooManyFiles(dropzoneOptions?.maxFiles ?? 0);
-        } else {
-          return ERROR_MESSAGES.fileNotSupported();
-        }
+        errors.forEach((error) => {
+          switch (error.code) {
+            case "file-invalid-type":
+              toast.error(ERROR_MESSAGES.fileInvalidType());
+              break;
+            case "file-too-large":
+              toast.error(
+                ERROR_MESSAGES.fileTooLarge(dropzoneOptions?.maxSize ?? 0),
+              );
+              break;
+            case "too-many-files":
+              toast.error(
+                ERROR_MESSAGES.tooManyFiles(dropzoneOptions?.maxFiles ?? 0),
+              );
+              break;
+            default:
+              toast.error(ERROR_MESSAGES.fileNotSupported());
+              break;
+          }
+        });
       }
-      return undefined;
-    }, [fileRejections, dropzoneOptions]);
-
+    }, [fileRejections, dropzoneOptions, acceptedFiles, onChange]);
     return (
       <div>
         <div
@@ -157,14 +188,14 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
                     layout="responsive"
                   />
                 </div>
-                <h1 className="text-p font-semibold text-black sm:text-h6 md:text-[1.5rem] lg:text-h6">
+                <h1 className="text-p font-semibold text-black75 sm:text-h6 md:text-[1.5rem] lg:text-h6">
                   Click To Upload X-Ray Image
                 </h1>
                 <div className="flex flex-col items-center  md:gap-[4px] xl:gap-[8px]">
-                  <p className="text-small text-gray-600 md:text-[.9rem]  xl:text-p">
+                  <p className="text-small text-black75  ">
                     Supported file type: JPEG (.jpg, .jpeg).
                   </p>
-                  <p className="text-small text-gray-600 md:text-[.9rem]  xl:text-p">
+                  <p className="text-small text-black75">
                     Maximum file size:{" "}
                     <span className="text-red-500">20 MB</span>
                   </p>
@@ -194,9 +225,6 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
         </div>
 
         {/* Error Text */}
-        <div className="mt-1 text-p text-red-500 md:text-h6">
-          {errorMessage}
-        </div>
       </div>
     );
   },

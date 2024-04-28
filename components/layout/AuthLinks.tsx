@@ -24,7 +24,7 @@ const AuthLinks = () => {
         onClick={() => {
           setFormType("Register");
         }}
-        className="rounded-lg border-[2px] bg-secondary px-[16px] py-[8px] text-p font-bold text-white transition hover:border-secondary hover:bg-white hover:text-black"
+        className="rounded-lg border-[2px] bg-secondary px-[16px] py-[8px] text-small font-bold text-white transition hover:border-secondary hover:bg-white hover:text-black"
       />
     </>
   );

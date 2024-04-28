@@ -6,6 +6,7 @@ import { getSession } from "@/lib/server/auth";
 import MobileDrawer from "./MobileDrawer";
 import MobileDrawerProfile from "./MobileDrawerProfile";
 import HistoryModal from "./HistoryModal";
+import Link from "next/link";
 
 const Navbar = async () => {
   const session = await getSession();
@@ -13,27 +14,33 @@ const Navbar = async () => {
   console.log(session);
 
   return (
-    <section className="sticky z-50 flex h-full items-center justify-between px-[64px]">
+    <div className="sticky z-50 flex h-full items-center justify-between px-[64px]">
       {/* Logo */}
       <div>
         <CustomLink
           text="MediScan"
           href="/"
-          className="text-h5 font-black text-black"
+          className="text-h5 font-black text-main"
         />
       </div>
       {/* Navigation */}
       <div className="hidden items-center md:flex md:gap-[32px] lg:gap-[64px]">
-        <CustomLink text="Tools" href="/" className="text font-bold" />
+        <CustomLink
+          text="Tools"
+          href="/"
+          className="text underline-custom font-bold "
+        />
         <CustomLink
           text="Analytics"
           href="/analytics"
           className="text font-bold"
+          target="_blank"
         />
         <CustomLink
           text="User Guide"
           href="/user-guide"
           className="text font-bold "
+          target="_blank"
         />
       </div>
       {/* Auth */}
@@ -45,7 +52,7 @@ const Navbar = async () => {
         {session ? <MobileDrawerProfile avatar={avatar} /> : <MobileDrawer />}
       </div>
       <HistoryModal />
-    </section>
+    </div>
   );
 };
 

@@ -1,8 +1,6 @@
 "use client";
 
 import {
-  Area,
-  AreaChart,
   CartesianGrid,
   Legend,
   Line,
@@ -18,7 +16,7 @@ const Analytics = () => {
   return (
     <section className="flex h-full w-full flex-col items-center justify-center gap-[16px] lg:flex-row">
       <div className="h-[40%] w-full rounded-lg bg-white p-[32px] sm:w-[80%] xl:h-[60%] xl:w-[50%] 2xl:h-[60%] 2xl:w-[50%]">
-        <h1 className="pl-[8px] text-h6 font-semibold text-black75">
+        <h1 className="pl-[8px] text-p font-semibold text-black75">
           Diagnosis Summary (2023)
         </h1>
         <ResponsiveContainer className="">

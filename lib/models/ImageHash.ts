@@ -1,20 +1,32 @@
 import mongoose, { Document, Model } from "mongoose";
 
-// Define the schema for storing image hashes
-interface ImageHashDocument extends Document {
-  hash: string;
+
+export interface ImageHashDocument extends Document {
+  imageHash: string;
+  diagnosisResult: string;
+  confidenceLevel: string;
+  createdAt: Date;
 }
 
-// Define the schema for the image hash collection
-const ImageHashSchema = new mongoose.Schema({
-  hash: {
-    type: String,
-    required: true,
-    unique: true, // Enforce uniqueness of hash values
+const ImageHashSchema = new mongoose.Schema(
+  {
+    imageHash: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    diagnosisResult: {
+      type: String,
+      required: true,
+    },
+    confidenceLevel: {
+      type: String,
+      required: true,
+    },
   },
-});
+  { timestamps: true },
+);
 
-// Create the ImageHash model
 const ImageHash: Model<ImageHashDocument> =
   mongoose.models.ImageHash ||
   mongoose.model<ImageHashDocument>("ImageHash", ImageHashSchema);

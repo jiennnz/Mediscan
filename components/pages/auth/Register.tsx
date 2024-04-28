@@ -90,7 +90,7 @@ const Register = () => {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="anim-bg-gradient flex h-[50px] w-[350px] items-center justify-center rounded-[5px] bg-gradient text-center  text-h6 font-semibold text-white disabled:pointer-events-none disabled:opacity-70 sm:h-[45px] sm:w-full"
+        className="anim-bg-gradient flex h-[50px] w-[350px] items-center justify-center gap-[8px] rounded-[5px] bg-gradient text-center  text-p font-semibold text-white disabled:pointer-events-none disabled:opacity-70 sm:h-[45px] sm:w-full"
       >
         {isSubmitting ? (
           <>
