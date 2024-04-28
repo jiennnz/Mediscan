@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
         "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/diagnose",
         urlData,
         {
-          timeout: 15000,
+          timeout: 30000,
         },
       );
 
