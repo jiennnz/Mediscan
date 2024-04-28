@@ -1,50 +1,13 @@
 import Analytics, { monthNames, YearlyData } from "@/lib/models/Analytics";
 import ImageHash, { ImageHashDocument } from "@/lib/models/ImageHash";
-import axios from "axios";
+import { dbConnect } from "@/lib/server/dbConnect";
 import { NextRequest, NextResponse } from "next/server";
 
-type Result = {
-  predicted_label: string;
-  confidence_level: string;
-};
-
 export async function POST(request: NextRequest) {
+  dbConnect();
   try {
     const body = await request.json();
-    const url = body.url;
-    const hash = body.hash;
-
-    const result: Result = {
-      predicted_label: "none",
-      confidence_level: "none",
-    };
-
-    try {
-      const urlData = { url: url };
-      const response = await axios.post(
-        "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/diagnose",
-        urlData,
-        {
-          timeout: 30000,
-        },
-      );
-
-      console.log(response.data);
-
-      result.predicted_label = response.data?.predicted_label;
-      result.confidence_level = response.data?.confidence_level;
-    } catch (error: any) {
-      let errorMessage = "An error occurred while processing your request. Please try again later.";
-  if (error.code === "ECONNABORTED") {
-    errorMessage = "The request timed out. Please try again later.";
-  }
-      console.log(error);
-      return NextResponse.json({
-        message: "Something went Wrong",
-        error: errorMessage,
-        success: false,
-      });
-    }
+    const { hash, diagnoseResult, confidenceLevel } = body;
 
     const existingImage = await ImageHash.findOne({ imageHash: hash });
 
@@ -52,8 +15,8 @@ export async function POST(request: NextRequest) {
       // Save new image hash
       const imageHashData: Partial<ImageHashDocument> = {
         imageHash: hash,
-        diagnosisResult: result.predicted_label,
-        confidenceLevel: result.confidence_level,
+        diagnosisResult: diagnoseResult,
+        confidenceLevel: confidenceLevel,
       };
 
       const newImageHash = new ImageHash(imageHashData);
@@ -82,7 +45,7 @@ export async function POST(request: NextRequest) {
       // Construct the update object based on the predicted label
       const updateObject = {
         $inc: {
-          [`data.${currentMonth}.${result.predicted_label}`]: 1,
+          [`data.${currentMonth}.${diagnoseResult}`]: 1,
         },
       };
 
@@ -97,7 +60,6 @@ export async function POST(request: NextRequest) {
     const response = NextResponse.json({
       message: "Success",
       success: true,
-      result: result,
     });
 
     return response;

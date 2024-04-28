@@ -34,12 +34,12 @@ const ProfileButtons = () => {
   };
   return (
     <div className="invisible absolute right-0 top-[43px] w-[150px] overflow-hidden rounded-xl bg-white opacity-0 shadow-md transition-opacity duration-300 group-hover:visible group-hover:opacity-100">
-      <button className="flex w-full bg-gradient bg-clip-text pb-[8px] pl-[16px] pt-[16px] text-start text-p font-semibold text-black75 transition duration-500 ease-in-out hover:text-transparent">
+      <button className="flex w-full bg-gradient bg-clip-text pb-[8px] pl-[16px] pt-[16px] text-start text-small font-semibold text-black75 transition duration-500 ease-in-out hover:text-transparent">
         Profile
       </button>
       <button
         onClick={logout}
-        className="flex w-full bg-gradient bg-clip-text pb-[16px] pl-[16px] pt-[8px] text-start text-p font-semibold text-black75 transition duration-500 ease-in-out hover:text-transparent"
+        className="flex w-full bg-gradient bg-clip-text pb-[16px] pl-[16px] pt-[8px] text-start text-small font-semibold text-black75 transition duration-500 ease-in-out hover:text-transparent"
       >
         Log out
       </button>

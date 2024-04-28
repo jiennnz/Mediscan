@@ -52,7 +52,7 @@ export const Diagnose = ({ userId }: sessionId) => {
       },
       {
         success: {
-          duration: 1000,
+          duration: 500,
         },
       },
     );
@@ -63,35 +63,70 @@ export const Diagnose = ({ userId }: sessionId) => {
     setConfidence("");
     setUrl(url);
 
-    let apiRoute = "diagnose";
-    if (userId === null || userId === undefined) {
-      apiRoute = "diagnose-no-auth";
-    }
-
     const data = {
       url: url,
-      hash: hash,
     };
 
-    const diagnoseApiPromise = axios.post(`/api/${apiRoute}`, data);
-    toast.promise(diagnoseApiPromise, {
-      loading: "Scanning the Image...",
-      success: "Diagnosis Done!",
-      error: (error) => {
-        console.log("Upload Error:", error);
-        const errorMessage = error.response?.data?.error || "Failed to Upload";
-        return errorMessage;
+    const diagnoseApiPromise = axios.post("/api/diagnose", data);
+    toast.promise(
+      diagnoseApiPromise,
+      {
+        loading: "Scanning the Image...",
+        success: "Moving next step",
+        error: (error) => {
+          console.log("Upload Error:", error);
+          const errorMessage =
+            error.response?.data?.error || "Failed to Diagnose";
+          return errorMessage;
+        },
       },
-    });
+      {
+        success: {
+          duration: 500,
+        },
+      },
+    );
 
     const diagnoseResponse = await diagnoseApiPromise;
-    if (diagnoseResponse.data?.success === false) {
-      setIsLoading(false);
-      toast.error("Something went wrong");
-      console.log(diagnoseResponse.data?.error);
+    const predicted_label = diagnoseResponse.data?.result?.predicted_label;
+    const confidence_level = diagnoseResponse.data?.result?.confidence_level;
+
+    setResult(predicted_label);
+    setConfidence(confidence_level);
+
+    const imageData = {
+      hash: hash,
+      diagnoseResult: predicted_label,
+      confidenceLevel: confidence_level,
+      url: url,
+    };
+
+    let message = "Moving next step...";
+    if (userId === null) {
+      message = "Diagnosis Done!";
     }
-    setResult(diagnoseResponse.data?.result?.predicted_label);
-    setConfidence(diagnoseResponse.data?.result?.confidence_level);
+
+    const analyticsApiPromise = axios.post("/api/analytics", imageData);
+    toast.promise(
+      analyticsApiPromise,
+      {
+        loading: "Just a little more...",
+        success: message,
+        error: (error) => {
+          console.log("Upload Error:", error);
+          const errorMessage =
+            error.response?.data?.error || "Failed to Diagnose";
+          return errorMessage;
+        },
+      },
+      {
+        success: {
+          duration: 500,
+        },
+      },
+    );
+
+    const analyticsApiResponse = await analyticsApiPromise;
 
     if (userId === null && diagnoseResponse.data?.success) {
       const diagnosisJson = sessionStorage.getItem("diagnosis");
@@ -100,17 +135,41 @@ export const Diagnose = ({ userId }: sessionId) => {
       const newDiagnosis = {
         ...diagnosis,
         [currentIndex]: {
-          predicted_label: diagnoseResponse.data?.result?.predicted_label,
-          confidence_level: diagnoseResponse.data?.result?.confidence_level,
+          predicted_label: predicted_label,
+          confidence_level: confidence_level,
           imageUrl: url,
         },
       };
       sessionStorage.setItem("diagnosis", JSON.stringify(newDiagnosis));
     }
+    if (userId && diagnoseResponse.data?.success) {
+      const saveDiagnosisPromise = axios.post("/api/diagnosis", imageData);
+      toast.promise(
+        saveDiagnosisPromise,
+        {
+          loading: "Finalizing...",
+          success: "Diagnosis Done!",
+          error: (error) => {
+            console.log("Upload Error:", error);
+            const errorMessage =
+              error.response?.data?.error || "Failed to Diagnose";
+            return errorMessage;
+          },
+        },
+        {
+          success: {
+            duration: 500,
+          },
+        },
+      );
+      const saveDiagnosisResponse = await saveDiagnosisPromise;
+    }
 
     if (diagnoseResponse.data?.success) {
-      setIsLoading(false);
+      setIsLoading(!isLoading);
       router.push("/diagnose");
+    } else {
+      setIsLoading(!isLoading);
     }
   };
 
