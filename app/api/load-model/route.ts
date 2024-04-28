@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const response = await axios.get(
-      "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/load-model",
+      "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/load_model",
     );
 
     if (response.data?.error) {
