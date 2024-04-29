@@ -41,6 +41,7 @@ export const Diagnose = ({ userId }: sessionId) => {
         success: "Moving next step",
         error: (error) => {
           console.log("Upload Error:", error);
+          setIsLoading(!isLoading);
           const errorMessage =
             error.response?.data?.error || "Failed to Diagnose";
           return errorMessage;
@@ -60,7 +61,6 @@ export const Diagnose = ({ userId }: sessionId) => {
     }
     console.log(loadModelResponse);
 
-
     const edgeStorePromise = edgestore.xrayImage.upload({
       file,
       onProgressChange: (progress) => console.log(progress),
@@ -75,6 +75,7 @@ export const Diagnose = ({ userId }: sessionId) => {
         success: "File Uploaded",
         error: (error) => {
           console.log("Upload Error:", error);
+          setIsLoading(!isLoading);
           return error.response?.data?.error || "Failed to Upload";
         },
       },
@@ -106,6 +107,7 @@ export const Diagnose = ({ userId }: sessionId) => {
         success: "Moving next step",
         error: (error) => {
           console.log("Upload Error:", error);
+          setIsLoading(!isLoading);
           const errorMessage =
             error.response?.data?.error || "Failed to Diagnose";
           return errorMessage;
@@ -145,6 +147,7 @@ export const Diagnose = ({ userId }: sessionId) => {
         success: message,
         error: (error) => {
           console.log("Upload Error:", error);
+          setIsLoading(!isLoading);
           const errorMessage =
             error.response?.data?.error || "Failed to Diagnose";
           return errorMessage;
@@ -182,6 +185,7 @@ export const Diagnose = ({ userId }: sessionId) => {
           success: "Diagnosis Done!",
           error: (error) => {
             console.log("Upload Error:", error);
+            setIsLoading(!isLoading);
             const errorMessage =
               error.response?.data?.error || "Failed to Diagnose";
             return errorMessage;
