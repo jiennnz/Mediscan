@@ -20,3 +20,14 @@ export type ResultType = {
   setResult: (newResult: string) => void;
   setConfidence: (newConfidence: string) => void;
 };
+
+export type userGuideNav =
+  | "introduction"
+  | "howToUse"
+  | "understandModel"
+  | "keyMetrics"
+  | "interpretResults";
+export type userGuideType = {
+  type: userGuideNav;
+  setType: (newType: userGuideNav) => void;
+};

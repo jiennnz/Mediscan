@@ -15,14 +15,14 @@ body {
 
 /* topnav */
 .shadowNav {
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 
 /* Navbar */
 
 .text {
-  @apply text-black75 text-small font-medium transition hover:text-main
+  @apply text-black75 text-[18px] font-medium transition hover:text-main
 }
 
 
@@ -47,3 +47,4 @@ body {
 .anim-bg-gradient:hover {
   background-position: 100% 0;
 }
+
