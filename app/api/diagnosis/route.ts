@@ -4,7 +4,7 @@ import { dbConnect } from "@/lib/server/dbConnect";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  dbConnect();
+  await dbConnect();
   try {
     const session = await getSession();
     const body = await request.json();
@@ -30,5 +30,46 @@ export async function POST(request: NextRequest) {
       message: "Success",
       success: true,
     });
-  } catch (error) {}
+  } catch (error: any) {
+    console.error("Error:", error);
+    return NextResponse.json({
+      message: "Internal Server Error",
+      error: error,
+      success: false,
+    });
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  await dbConnect();
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 500 });
+    }
+
+    const deletedDiagnosis = await Diagnosis.findByIdAndDelete(id);
+    if (!deletedDiagnosis) {
+      return NextResponse.json(
+        { error: "Diagnosis not found" },
+        { status: 500 },
+      );
+    }
+
+    console.log("deleted diagnosis");
+
+    return NextResponse.json(
+      { message: "Diagnosis deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json({
+      message: "Internal Server Error",
+      error: error,
+      success: false,
+    });
+  }
 }
