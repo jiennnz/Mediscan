@@ -33,7 +33,12 @@ export async function POST(request: NextRequest) {
       if (!analyticsExists) {
         const defaultAnalyticsData: YearlyData = {};
         monthNames.forEach((month) => {
-          defaultAnalyticsData[month] = { Normal: 0, Bacterial: 0, Viral: 0 };
+          defaultAnalyticsData[month] = {
+            month: month,
+            Normal: 0,
+            Bacterial: 0,
+            Viral: 0,
+          };
         });
 
         await Analytics.create({
@@ -63,6 +68,58 @@ export async function POST(request: NextRequest) {
     });
 
     return response;
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json({
+      message: "Internal Server Error",
+      error: error,
+      success: false,
+    });
+  }
+}
+
+export async function GET() {
+  try {
+    await dbConnect();
+
+    const currentYear = new Date().getFullYear();
+    const analyticsData = await Analytics.findOne({ year: currentYear });
+
+    if (!analyticsData) {
+      return NextResponse.json(
+        {
+          message: `No data for year ${currentYear}`,
+          success: true,
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    const { data } = analyticsData;
+
+    let totalNormal = 0;
+    let totalBacterial = 0;
+    let totalViral = 0;
+
+    for (const monthData of Object.values(data)) {
+      totalNormal += monthData.Normal;
+      totalBacterial += monthData.Bacterial;
+      totalViral += monthData.Viral;
+    }
+
+    const totalXray = totalNormal + totalBacterial + totalViral;
+
+    return NextResponse.json({
+      message: `${currentYear} data successfully retrieved`,
+      success: true,
+      data: data,
+      totalNormal: totalNormal,
+      totalBacterial: totalBacterial,
+      totalViral: totalViral,
+      totalXray: totalXray,
+    });
   } catch (error) {
     console.error("Error:", error);
     return NextResponse.json({

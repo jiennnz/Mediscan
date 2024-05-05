@@ -1,8 +1,8 @@
 import mongoose, { Document, Model } from "mongoose";
 
 // Define the schema for monthly data
-interface MonthlyData {
-  [key: string]: number;
+export interface MonthlyData {
+  month: string;
   Normal: number;
   Bacterial: number;
   Viral: number;
