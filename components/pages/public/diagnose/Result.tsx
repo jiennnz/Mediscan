@@ -57,14 +57,6 @@ const Result = () => {
           </h1>
         </div>
 
-        <div className="w-[270px] pt-[8px] sm:pt-0 lg:w-[300px] xl:w-[400px]">
-          <CustomLink
-            href="/user-guide"
-            text="Explore how predictions are generated. Click here for an
-                      in-depth explanation."
-            className=" text-[.9rem] text-main opacity-85 sm:text-smaller lg:text-small xl:text-p"
-          />
-        </div>
         <div className="flex justify-center pt-[8px] sm:justify-start">
           <CustomLink
             href="/"
