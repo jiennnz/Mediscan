@@ -8,11 +8,14 @@ import Image from "next/image";
 
 const Result = () => {
   const url = useImageUrlStore((state) => state.url);
-  const result = useResultStore((state) => state.result);
+  let result = useResultStore((state) => state.result);
   const confidence = useResultStore((state) => state.confidence);
 
   console.log(`this is the url ${url}`);
 
+  if (result === "Bacterial" || result === "Viral") {
+    result += " Pneumonia";
+  }
 
   return (
     <section className="flex h-full w-full flex-col items-center justify-center  sm:flex-row sm:gap-[32px]">
@@ -33,11 +36,11 @@ const Result = () => {
           </h1>
           <h1
             className={clsx(
-              " text-h6 font-black sm:text-h3 sm:leading-[55px] lg:text-h2 xl:text-h1 xl:leading-[70px]",
+              " text-p font-black sm:text-h4 sm:leading-[55px] lg:text-h3 xl:text-h2 xl:leading-[70px]",
               {
                 "text-secondary": result === "Normal",
-                "text-error": result === "Bacterial",
-                "text-purple": result === "Viral",
+                "text-error": result === "Bacterial Pneumonia",
+                "text-purple": result === "Viral Pneumonia",
               },
             )}
           >

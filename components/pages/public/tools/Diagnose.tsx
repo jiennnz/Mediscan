@@ -32,34 +32,6 @@ export const Diagnose = ({ userId }: sessionId) => {
     const fileData = await file.arrayBuffer();
     const buffer = Buffer.from(fileData);
     const hash = generateHash(buffer);
-    
-    const loadModelPromise = axios.get("/api/load-model");
-    toast.promise(
-      loadModelPromise,
-      {
-        loading: "Loading model...",
-        success: "Moving next step",
-        error: (error) => {
-          console.log("Upload Error:", error);
-          setIsLoading(!isLoading);
-          const errorMessage =
-            error.response?.data?.error || "Failed to Diagnose";
-          return errorMessage;
-        },
-      },
-      {
-        success: {
-          duration: 500,
-        },
-      },
-    );
-
-    const loadModelResponse = await loadModelPromise;
-    if (loadModelResponse.data?.success === false) {
-      toast.error("Something went wrong");
-      return;
-    }
-    console.log(loadModelResponse);
 
     const edgeStorePromise = edgestore.xrayImage.upload({
       file,
@@ -98,6 +70,7 @@ export const Diagnose = ({ userId }: sessionId) => {
 
     const diagnoseApiPromise = axios.post(
       "https://mediscan-flask-api-ytf6jtgsua-as.a.run.app/diagnose",
+
       data,
     );
     toast.promise(
@@ -121,6 +94,7 @@ export const Diagnose = ({ userId }: sessionId) => {
     );
 
     const diagnoseResponse = await diagnoseApiPromise;
+    console.log(diagnoseResponse);
     const predicted_label = diagnoseResponse.data?.predicted_label;
     const confidence_level = diagnoseResponse.data?.confidence_level;
 
