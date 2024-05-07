@@ -74,7 +74,10 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       multiple: false,
       disabled,
       onDrop: (acceptedFiles) => {
-        // const file = acceptedFiles[0];
+        const file = acceptedFiles[0];
+        if (file) {
+          void onChange?.(file);
+        }
 
         // const acceptImage = async () => {
         //   const validateIfXray = async () => {
