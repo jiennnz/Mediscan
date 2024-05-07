@@ -74,32 +74,32 @@ const SingleImageDropzone = React.forwardRef<HTMLInputElement, InputProps>(
       multiple: false,
       disabled,
       onDrop: (acceptedFiles) => {
-        const file = acceptedFiles[0];
+        // const file = acceptedFiles[0];
 
-        const acceptImage = async () => {
-          const validateIfXray = async () => {
-            if (acceptedFiles.length > 0) {
-              const file = acceptedFiles[0];
-              const result = await checkIfXray(file);
+        // const acceptImage = async () => {
+        //   const validateIfXray = async () => {
+        //     if (acceptedFiles.length > 0) {
+        //       const file = acceptedFiles[0];
+        //       const result = await checkIfXray(file);
            
 
-              if (!result) {
-                toast.error("The uploaded image is not a valid X-ray.");
-                return true;
-              } else {
-                return false;
-              }
-            }
-          };
+        //       if (!result) {
+        //         toast.error("The uploaded image is not a valid X-ray.");
+        //         return true;
+        //       } else {
+        //         return false;
+        //       }
+        //     }
+        //   };
 
-          const result = await validateIfXray();
+        //   const result = await validateIfXray();
 
-          if (!result) {
-            void onChange?.(file);
-          }
-        };
+        //   if (!result) {
+        //     void onChange?.(file);
+        //   }
+        // };
 
-        acceptImage();
+        // acceptImage();
       },
       ...dropzoneOptions,
     });
